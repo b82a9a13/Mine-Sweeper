@@ -20,6 +20,8 @@ height = 600
 width = 600
 secheight = height/grid
 secwidth = width/grid
+scoreInt = 0
+highScoreInt = 0
 
 #Set the application title and size. Disable resizing
 root.title("Mine Sweeper")
@@ -43,8 +45,8 @@ canvas = tk.Canvas(root, width=width, height=height, bg="green")
 endBtn = tk.Button(root, text='End Game', command=lambda:end_game(), height=2, width=10)
 restartBtn = tk.Button(root, text='Restart Game', command=lambda:restart_game(), height=2, width=10)
 #Define gmae labels
-highScore = Label(root, text='High Score: 0')
-score = Label(root, text='Score: 0')
+highScore = Label(root, text='High Score: '+str(highScoreInt))
+score = Label(root, text='Score: '+str(scoreInt))
 #Define values array which will contain the game data
 gameStat = False
 values = []
@@ -80,10 +82,12 @@ def start_game():
     global values
     global squares
     global gameStat
+    global scoreInt
     #Set game varaibles to the default values
     gameStat = True
     exit_menu()
-    score.config(text='Score: 0')
+    scoreInt = 0
+    score.config(text='Score: '+str(scoreInt))
     values = []
     squares = []
     for x in range(grid):
@@ -137,10 +141,6 @@ def start_game():
                     values[xx][yy+1] = values[xx][yy+1] + 1 if values[xx][yy+1] != 9 else 9
                     values[xx+1][yy+1] = values[xx+1][yy+1] + 1 if values[xx+1][yy+1] != 9 else 9
                     values[xx-1][yy-1] = values[xx-1][yy+1] + 1 if values[xx-1][yy+1] != 9 else 9
-                elif xx == 0 and yy == 0:
-                    values[xx+1][yy] = values[xx+1][yy] + 1 if values[xx+1][yy] != 9 else 9
-                    values[xx][yy+1] = values[xx][yy+1] + 1 if values[xx+1][yy] != 9 else 9
-                    values[xx+1][yy+1] = values[xx+1][yy+1] + 1 if values[xx+1][yy+1] != 9 else 9
                 elif xx > 0 and xx < grid-1 and yy == grid-1:
                     values[xx][yy-1] = values[xx][yy-1] + 1 if values[xx][yy-1] != 9 else 9
                     values[xx+1][yy] = values[xx+1][yy] + 1 if values[xx+1][yy] != 9 else 9
@@ -157,6 +157,18 @@ def start_game():
                     values[xx][yy-1] = values[xx][yy-1] + 1 if values[xx][yy-1] != 9 else 9
                     values[xx-1][yy] = values[xx-1][yy] + 1 if values[xx-1][yy] != 9 else 9
                     values[xx-1][yy-1] = values[xx-1][yy-1] + 1 if values[xx-1][yy-1] != 9 else 9
+                elif xx == 0 and yy == grid-1:
+                    values[xx][yy-1] = values[xx][yy-1] + 1 if values[xx][yy-1] != 9 else 9
+                    values[xx+1][yy] = values[xx+1][yy] + 1 if values[xx+1][yy] != 9 else 9
+                    values[xx+1][yy-1] = values[xx+1][yy-1] + 1 if values[xx+1][yy-1] != 9 else 9
+                elif xx == grid-1 and yy == 0:
+                    values[xx][yy+1] = values[xx][yy+1] + 1 if values[xx][yy+1] != 9 else 9
+                    values[xx-1][yy] = values[xx-1][yy] + 1 if values[xx-1][yy] != 9 else 9
+                    values[xx-1][yy+1] = values[xx-1][yy+1] + 1 if values[xx-1][yy+1] != 9 else 9
+                elif xx == 0 and yy == 0:
+                    values[xx+1][yy] = values[xx+1][yy] + 1 if values[xx+1][yy] != 9 else 9
+                    values[xx][yy+1] = values[xx][yy+1] + 1 if values[xx+1][yy] != 9 else 9
+                    values[xx+1][yy+1] = values[xx+1][yy+1] + 1 if values[xx+1][yy+1] != 9 else 9
     
     #Draw mines and values, and add a square to the squares array
     for x in range(grid):
@@ -196,6 +208,8 @@ def start_game():
     canvas.pack(side='left')
     #Function is called when the canvas is clicked
     def on_canvas_click(event):
+        global scoreInt
+        global highScoreInt
         global gameStat
         #Get the x and y postion on the click
         x = event.x
@@ -214,79 +228,154 @@ def start_game():
             #Check if the square click is present on the canvas
             if canvas.find_withtag(squares[xPos][yPos]):
                 canvas.delete(squares[xPos][yPos])
+                scoreInt += 1
                 if current == 0:
-                    #runs when a empty square is clicked
+                    #runs when a empty square is clicked, clears surrounding squares if they aren't a mine
                     if xPos != 0 and xPos != grid-1 and yPos != 0 and yPos != grid-1:
                         if values[xPos+1][yPos] != 9:
                             canvas.delete(squares[xPos+1][yPos])
+                            scoreInt += 1
                         if values[xPos-1][yPos] != 9:
                             canvas.delete(squares[xPos-1][yPos])
+                            scoreInt += 1
                         if values[xPos][yPos+1] != 9:
                             canvas.delete(squares[xPos][yPos+1])
+                            scoreInt += 1
                         if values[xPos][yPos-1] != 9:
                             canvas.delete(squares[xPos][yPos-1])
+                            scoreInt += 1
                         if values[xPos+1][yPos-1] != 9:
                             canvas.delete(squares[xPos+1][yPos-1])
+                            scoreInt += 1
                         if values[xPos+1][yPos+1] != 9:
                             canvas.delete(squares[xPos+1][yPos+1])
+                            scoreInt += 1
                         if values[xPos-1][yPos-1] != 9:
                             canvas.delete(squares[xPos-1][yPos-1])
+                            scoreInt += 1
                         if values[xPos-1][yPos+1] != 9:
                             canvas.delete(squares[xPos-1][yPos+1])
-                    if xPos != 0 and xPos != grid-1 and yPos == 0:
+                            scoreInt += 1
+                    elif xPos != 0 and xPos != grid-1 and yPos == 0:
                         if values[xPos][yPos+1] != 9:
                             canvas.delete(squares[xPos][yPos+1])
+                            scoreInt += 1
                         if values[xPos+1][yPos] != 9:
                             canvas.delete(squares[xPos+1][yPos])
+                            scoreInt += 1
                         if values[xPos+1][yPos+1] != 9:
                             canvas.delete(squares[xPos+1][yPos+1])
+                            scoreInt += 1
                         if values[xPos-1][yPos] != 9:
                             canvas.delete(squares[xPos-1][yPos])
+                            scoreInt += 1
                         if values[xPos-1][yPos+1] != 9:
                             canvas.delete(squares[xPos-1][yPos+1])
-                    if xPos != 0 and xPos != grid-1 and yPos == grid-1:
+                            scoreInt += 1
+                    elif xPos != 0 and xPos != grid-1 and yPos == grid-1:
                         if values[xPos][yPos-1] != 9:
                             canvas.delete(squares[xPos][yPos-1])
-                        if values[xPos-1][yPos] != 9:
-                            canvas.delete(squares[xPos][yPos-1])
-                        if values[xPos-1][yPos-1] != 9:
-                            canvas.delete(squares[xPos-1][yPos-1])
-                        if values[xPos+1][yPos] != 9:
-                            canvas.delete(squares[xPos+1][yPos])
-                        if values[xPos+1][yPos-1] != 9:
-                            canvas.delete(squares[xPos+1][yPos-1])
-                    if xPos == 0 and yPos != 0 and yPos != grid-1:
-                        if values[xPos+1][yPos] != 9:
-                            canvas.delete(squares[xPos+1][yPos])
-                        if values[xPos][yPos-1] != 9:
-                            canvas.delete(squares[xPos][yPos-1])
-                        if values[xPos][yPos+1] != 9:
-                            canvas.delete(squares[xPos][yPos+1])
-                        if values[xPos+1][yPos-1] != 9:
-                            canvas.delete(squares[xPos+1][yPos-1])
-                        if values[xPos+1][yPos+1] != 9:
-                            canvas.delete(squares[xPos+1][yPos+1])
-                    if xPos == grid-1 and yPos != 0 and yPos != grid-1:
+                            scoreInt += 1
                         if values[xPos-1][yPos] != 9:
                             canvas.delete(squares[xPos-1][yPos])
-                        if values[xPos][yPos+1] != 9:
-                            canvas.delete(squares[xPos][yPos+1])
-                        if values[xPos][yPos-1] != 9:
-                            canvas.delete(squares[xPos][yPos-1])
-                        if values[xPos-1][yPos+1] != 9:
-                            canvas.delete(squares[xPos-1][yPos+1])
+                            scoreInt += 1
                         if values[xPos-1][yPos-1] != 9:
                             canvas.delete(squares[xPos-1][yPos-1])
-                    #Add few more if statments to add
-        
+                            scoreInt += 1
+                        if values[xPos+1][yPos] != 9:
+                            canvas.delete(squares[xPos+1][yPos])
+                            scoreInt += 1
+                        if values[xPos+1][yPos-1] != 9:
+                            canvas.delete(squares[xPos+1][yPos-1])
+                            scoreInt += 1
+                    elif xPos == 0 and yPos != 0 and yPos != grid-1:
+                        if values[xPos+1][yPos] != 9:
+                            canvas.delete(squares[xPos+1][yPos])
+                            scoreInt += 1
+                        if values[xPos][yPos-1] != 9:
+                            canvas.delete(squares[xPos][yPos-1])
+                            scoreInt += 1
+                        if values[xPos][yPos+1] != 9:
+                            canvas.delete(squares[xPos][yPos+1])
+                            scoreInt += 1
+                        if values[xPos+1][yPos-1] != 9:
+                            canvas.delete(squares[xPos+1][yPos-1])
+                            scoreInt += 1
+                        if values[xPos+1][yPos+1] != 9:
+                            canvas.delete(squares[xPos+1][yPos+1])
+                            scoreInt += 1
+                    elif xPos == grid-1 and yPos != 0 and yPos != grid-1:
+                        if values[xPos-1][yPos] != 9:
+                            canvas.delete(squares[xPos-1][yPos])
+                            scoreInt += 1
+                        if values[xPos][yPos+1] != 9:
+                            canvas.delete(squares[xPos][yPos+1])
+                            scoreInt += 1
+                        if values[xPos][yPos-1] != 9:
+                            canvas.delete(squares[xPos][yPos-1])
+                            scoreInt += 1
+                        if values[xPos-1][yPos+1] != 9:
+                            canvas.delete(squares[xPos-1][yPos+1])
+                            scoreInt += 1
+                        if values[xPos-1][yPos-1] != 9:
+                            canvas.delete(squares[xPos-1][yPos-1])
+                            scoreInt += 1
+                    elif xPos == 0 and yPos == 0:
+                        if values[xPos][yPos+1] != 9:
+                            canvas.delete(squares[xPos][yPos+1])
+                            scoreInt += 1
+                        if values[xPos+1][yPos] != 9:
+                            canvas.delete(squares[xPos+1][yPos])
+                            scoreInt += 1
+                        if values[xPos+1][yPos+1] != 9:
+                            canvas.delete(squares[xPos+1][yPos+1])
+                            scoreInt += 1
+                    elif xPos == grid-1 and yPos == grid-1:
+                        if values[xPos][yPos-1] != 9:
+                            canvas.delete(squares[xPos][yPos-1])
+                            scoreInt += 1
+                        if values[xPos-1][yPos] != 9:
+                            canvas.delete(squares[xPos-1][yPos])
+                            scoreInt += 1
+                        if values[xPos-1][yPos-1] != 9:
+                            canvas.delete(squares[xPos-1][yPos-1])
+                            scoreInt += 1
+                    elif xPos == 0 and yPos == grid-1:
+                        if values[xPos][yPos-1] != 9:
+                            canvas.delete(squares[xPos][yPos-1])
+                            scoreInt += 1
+                        if values[xPos+1][yPos] != 9:
+                            canvas.delete(squares[xPos+1][yPos])
+                            scoreInt += 1
+                        if values[xPos+1][yPos-1] != 9:
+                            canvas.delete(squares[xPos+1][yPos-1])
+                            scoreInt += 1
+                    elif xPos == grid-1 and yPos == 0:
+                        if values[xPos][yPos+1] != 9:
+                            canvas.delete(squares[xPos][yPos+1])
+                            scoreInt += 1
+                        if values[xPos-1][yPos] != 9:
+                            canvas.delete(squares[xPos-1][yPos])
+                            scoreInt += 1
+                        if values[xPos-1][yPos+1] != 9:
+                            canvas.delete(squares[xPos-1][yPos+1])
+                            scoreInt += 1
+        #Check if the high score is less than the current score, if so the high score label
+        if scoreInt > highScoreInt:
+            highScoreInt = scoreInt
+            highScore.config(text='High Score: '+str(highScoreInt))
+        #Update the score label
+        score.config(text='Score: '+str(scoreInt))
     #Bind a click event        
     canvas.bind("<Button-1>", on_canvas_click)
 
 #Function is called to restart the game
 def restart_game():
     global gameStat
+    global scoreInt
     gameStat = True
-    score.config(text='Score: 0')
+    scoreInt = 0
+    score.config(text='Score: '+str(scoreInt))
     canvas.pack_forget()
     canvas.delete('all')
     start_game()
