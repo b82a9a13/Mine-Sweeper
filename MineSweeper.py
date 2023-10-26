@@ -57,6 +57,31 @@ for x in range(grid):
         tmp.append(0)
     values.append(tmp)
 
+#Upload Menu
+#Define the heading text
+uploadText = Label(root, text='Select a image for each number or empty square or mine')
+#Define the buttons
+numBtns = [
+    [
+        tk.Button(root, text='1', command=lambda:open_image(1)),
+        tk.Button(root, text='2', command=lambda:open_image(2)),
+        tk.Button(root, text='3', command=lambda:open_image(3)),
+        tk.Button(root, text='4', command=lambda:open_image(4))
+    ],
+    [
+        tk.Button(root, text='5', command=lambda:open_image(5)),
+        tk.Button(root, text='6', command=lambda:open_image(6)),
+        tk.Button(root, text='7', command=lambda:open_image(7)),
+        tk.Button(root, text='8', command=lambda:open_image(8))
+    ]
+]
+txtBtns = [
+    tk.Button(root, text='Empty Square', command=lambda:open_image(0)),
+    tk.Button(root, text='Mine', command=lambda:open_image(9))
+]
+#Define the back button
+backBtn = tk.Button(root, text='Go Back', command=lambda:upload_back())
+
 #Function is called to close the program
 def exit_program():
     root.destroy()
@@ -92,7 +117,6 @@ def start_game():
     squares = []
     for x in range(grid):
         tmp = []
-        tmpp = []
         for y in range(grid):
             tmp.append(0)
         values.append(tmp)
@@ -379,5 +403,38 @@ def restart_game():
     canvas.pack_forget()
     canvas.delete('all')
     start_game()
+
+#Function is called to open the upload images page
+def upload_images():
+    exit_menu()
+    uploadText.pack(side='top')
+    backBtn.pack(side='bottom')
+    xp = 0
+    for x in numBtns:
+        yp = 0
+        for y in x:
+            y.place(x=((winWidth/2)-40)+(20*yp),y=25+(xp*30))
+            yp += 1
+        xp += 1
+    xp = 0
+    for x in txtBtns:
+        x.place(x=((winWidth/2)-60)+(85*xp),y=85)
+        xp += 1
+
+
+#Function is called to return to the main menu from the uploag images page
+def upload_back():
+    uploadText.pack_forget()
+    backBtn.pack_forget()
+    for x in numBtns:
+        for y in x:
+            y.place_forget()
+    for x in txtBtns:
+        x.place_forget()
+    create_menu()
+
+#Function is called when a image button is clicked
+def open_image(pos):
+    print('Open Images')
 
 root.mainloop()
