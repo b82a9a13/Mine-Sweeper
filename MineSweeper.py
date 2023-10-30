@@ -13,7 +13,7 @@ from PIL import Image, ImageTk
 #Define required root variable and size variables
 root = tk.Tk()
 mines = 20
-grid = 18
+grid = 20
 winHeight = 600
 winWidth = 800
 height = 600
@@ -81,6 +81,12 @@ txtBtns = [
 ]
 #Define the back button
 backBtn = tk.Button(root, text='Go Back', command=lambda:upload_back())
+#Array is used to store the images
+imgs = [None, None, None, None, None, None, None, None, None, None]
+#Array is used to store the labels
+labels = [None, None, None, None, None, None, None, None, None, None]
+#Varaible used to display a image error message
+uploadError = Label(root, text='Invalid image size, it must be 100px by 100px', fg='red')
 
 #Function is called to close the program
 def exit_program():
@@ -164,7 +170,7 @@ def start_game():
                     values[xx-1][yy] = values[xx-1][yy] + 1 if values[xx-1][yy] != 9 else 9
                     values[xx][yy+1] = values[xx][yy+1] + 1 if values[xx][yy+1] != 9 else 9
                     values[xx+1][yy+1] = values[xx+1][yy+1] + 1 if values[xx+1][yy+1] != 9 else 9
-                    values[xx-1][yy-1] = values[xx-1][yy+1] + 1 if values[xx-1][yy+1] != 9 else 9
+                    values[xx-1][yy-1] = values[xx-1][yy-1] + 1 if values[xx-1][yy-1] != 9 else 9
                 elif xx > 0 and xx < grid-1 and yy == grid-1:
                     values[xx][yy-1] = values[xx][yy-1] + 1 if values[xx][yy-1] != 9 else 9
                     values[xx+1][yy] = values[xx+1][yy] + 1 if values[xx+1][yy] != 9 else 9
@@ -191,7 +197,7 @@ def start_game():
                     values[xx-1][yy+1] = values[xx-1][yy+1] + 1 if values[xx-1][yy+1] != 9 else 9
                 elif xx == 0 and yy == 0:
                     values[xx+1][yy] = values[xx+1][yy] + 1 if values[xx+1][yy] != 9 else 9
-                    values[xx][yy+1] = values[xx][yy+1] + 1 if values[xx+1][yy] != 9 else 9
+                    values[xx][yy+1] = values[xx][yy+1] + 1 if values[xx][yy+1] != 9 else 9
                     values[xx+1][yy+1] = values[xx+1][yy+1] + 1 if values[xx+1][yy+1] != 9 else 9
     
     #Draw mines and values, and add a square to the squares array
@@ -207,7 +213,9 @@ def start_game():
             elif x != 0 and y != 0:
                 xPos = (secwidth*x)+(secwidth/2)
                 yPos = (secwidth*y)+(secwidth/2)
-            if values[x][y] != 0:
+            if has_image(values[x][y]):
+                canvas.create_image(xPos, yPos, image=imgs[values[x][y]])
+            elif values[x][y] != 0:
                 if values[x][y] == 9:
                     canvas.create_text(xPos, yPos, text='M', fill='red', font=('Arial 10 bold'))
                 else:
@@ -256,132 +264,132 @@ def start_game():
                 if current == 0:
                     #runs when a empty square is clicked, clears surrounding squares if they aren't a mine
                     if xPos != 0 and xPos != grid-1 and yPos != 0 and yPos != grid-1:
-                        if values[xPos+1][yPos] != 9:
+                        if values[xPos+1][yPos] != 9 and canvas.find_withtag(squares[xPos+1][yPos]):
                             canvas.delete(squares[xPos+1][yPos])
                             scoreInt += 1
-                        if values[xPos-1][yPos] != 9:
+                        if values[xPos-1][yPos] != 9 and canvas.find_withtag(squares[xPos-1][yPos]):
                             canvas.delete(squares[xPos-1][yPos])
                             scoreInt += 1
-                        if values[xPos][yPos+1] != 9:
+                        if values[xPos][yPos+1] != 9 and canvas.find_withtag(squares[xPos][yPos+1]):
                             canvas.delete(squares[xPos][yPos+1])
                             scoreInt += 1
-                        if values[xPos][yPos-1] != 9:
+                        if values[xPos][yPos-1] != 9 and canvas.find_withtag(squares[xPos][yPos-1]):
                             canvas.delete(squares[xPos][yPos-1])
                             scoreInt += 1
-                        if values[xPos+1][yPos-1] != 9:
+                        if values[xPos+1][yPos-1] != 9 and canvas.find_withtag(squares[xPos+1][yPos-1]):
                             canvas.delete(squares[xPos+1][yPos-1])
                             scoreInt += 1
-                        if values[xPos+1][yPos+1] != 9:
+                        if values[xPos+1][yPos+1] != 9 and canvas.find_withtag(squares[xPos+1][yPos+1]):
                             canvas.delete(squares[xPos+1][yPos+1])
                             scoreInt += 1
-                        if values[xPos-1][yPos-1] != 9:
+                        if values[xPos-1][yPos-1] != 9 and canvas.find_withtag(squares[xPos-1][yPos-1]):
                             canvas.delete(squares[xPos-1][yPos-1])
                             scoreInt += 1
-                        if values[xPos-1][yPos+1] != 9:
+                        if values[xPos-1][yPos+1] != 9 and canvas.find_withtag(squares[xPos-1][yPos+1]):
                             canvas.delete(squares[xPos-1][yPos+1])
                             scoreInt += 1
                     elif xPos != 0 and xPos != grid-1 and yPos == 0:
-                        if values[xPos][yPos+1] != 9:
+                        if values[xPos][yPos+1] != 9 and canvas.find_withtag(squares[xPos][yPos+1]):
                             canvas.delete(squares[xPos][yPos+1])
                             scoreInt += 1
-                        if values[xPos+1][yPos] != 9:
+                        if values[xPos+1][yPos] != 9 and canvas.find_withtag(squares[xPos+1][yPos]):
                             canvas.delete(squares[xPos+1][yPos])
                             scoreInt += 1
-                        if values[xPos+1][yPos+1] != 9:
+                        if values[xPos+1][yPos+1] != 9 and canvas.find_withtag(squares[xPos+1][yPos+1]):
                             canvas.delete(squares[xPos+1][yPos+1])
                             scoreInt += 1
-                        if values[xPos-1][yPos] != 9:
+                        if values[xPos-1][yPos] != 9 and canvas.find_withtag(squares[xPos-1][yPos]):
                             canvas.delete(squares[xPos-1][yPos])
                             scoreInt += 1
-                        if values[xPos-1][yPos+1] != 9:
+                        if values[xPos-1][yPos+1] != 9 and canvas.find_withtag(squares[xPos-1][yPos+1]):
                             canvas.delete(squares[xPos-1][yPos+1])
                             scoreInt += 1
                     elif xPos != 0 and xPos != grid-1 and yPos == grid-1:
-                        if values[xPos][yPos-1] != 9:
+                        if values[xPos][yPos-1] != 9 and canvas.find_withtag(squares[xPos][yPos-1]):
                             canvas.delete(squares[xPos][yPos-1])
                             scoreInt += 1
-                        if values[xPos-1][yPos] != 9:
+                        if values[xPos-1][yPos] != 9 and canvas.find_withtag(squares[xPos-1][yPos]):
                             canvas.delete(squares[xPos-1][yPos])
                             scoreInt += 1
-                        if values[xPos-1][yPos-1] != 9:
+                        if values[xPos-1][yPos-1] != 9 and canvas.find_withtag(squares[xPos-1][yPos-1]):
                             canvas.delete(squares[xPos-1][yPos-1])
                             scoreInt += 1
-                        if values[xPos+1][yPos] != 9:
+                        if values[xPos+1][yPos] != 9 and canvas.find_withtag(squares[xPos+1][yPos]):
                             canvas.delete(squares[xPos+1][yPos])
                             scoreInt += 1
-                        if values[xPos+1][yPos-1] != 9:
+                        if values[xPos+1][yPos-1] != 9 and canvas.find_withtag(squares[xPos+1][yPos-1]):
                             canvas.delete(squares[xPos+1][yPos-1])
                             scoreInt += 1
                     elif xPos == 0 and yPos != 0 and yPos != grid-1:
-                        if values[xPos+1][yPos] != 9:
+                        if values[xPos+1][yPos] != 9 and canvas.find_withtag(squares[xPos+1][yPos]):
                             canvas.delete(squares[xPos+1][yPos])
                             scoreInt += 1
-                        if values[xPos][yPos-1] != 9:
+                        if values[xPos][yPos-1] != 9 and canvas.find_withtag(squares[xPos][yPos-1]):
                             canvas.delete(squares[xPos][yPos-1])
                             scoreInt += 1
-                        if values[xPos][yPos+1] != 9:
+                        if values[xPos][yPos+1] != 9 and canvas.find_withtag(squares[xPos][yPos+1]):
                             canvas.delete(squares[xPos][yPos+1])
                             scoreInt += 1
-                        if values[xPos+1][yPos-1] != 9:
+                        if values[xPos+1][yPos-1] != 9 and canvas.find_withtag(squares[xPos+1][yPos-1]):
                             canvas.delete(squares[xPos+1][yPos-1])
                             scoreInt += 1
-                        if values[xPos+1][yPos+1] != 9:
+                        if values[xPos+1][yPos+1] != 9 and canvas.find_withtag(squares[xPos+1][yPos+1]):
                             canvas.delete(squares[xPos+1][yPos+1])
                             scoreInt += 1
                     elif xPos == grid-1 and yPos != 0 and yPos != grid-1:
-                        if values[xPos-1][yPos] != 9:
+                        if values[xPos-1][yPos] != 9 and canvas.find_withtag(squares[xPos-1][yPos]):
                             canvas.delete(squares[xPos-1][yPos])
                             scoreInt += 1
-                        if values[xPos][yPos+1] != 9:
+                        if values[xPos][yPos+1] != 9 and canvas.find_withtag(squares[xPos][yPos+1]):
                             canvas.delete(squares[xPos][yPos+1])
                             scoreInt += 1
-                        if values[xPos][yPos-1] != 9:
+                        if values[xPos][yPos-1] != 9 and canvas.find_withtag(squares[xPos][yPos-1]):
                             canvas.delete(squares[xPos][yPos-1])
                             scoreInt += 1
-                        if values[xPos-1][yPos+1] != 9:
+                        if values[xPos-1][yPos+1] != 9 and canvas.find_withtag(squares[xPos-1][yPos+1]):
                             canvas.delete(squares[xPos-1][yPos+1])
                             scoreInt += 1
-                        if values[xPos-1][yPos-1] != 9:
+                        if values[xPos-1][yPos-1] != 9 and canvas.find_withtag(squares[xPos-1][yPos-1]):
                             canvas.delete(squares[xPos-1][yPos-1])
                             scoreInt += 1
                     elif xPos == 0 and yPos == 0:
-                        if values[xPos][yPos+1] != 9:
+                        if values[xPos][yPos+1] != 9 and canvas.find_withtag(squares[xPos][yPos+1]):
                             canvas.delete(squares[xPos][yPos+1])
                             scoreInt += 1
-                        if values[xPos+1][yPos] != 9:
+                        if values[xPos+1][yPos] != 9 and canvas.find_withtag(squares[xPos+1][yPos]):
                             canvas.delete(squares[xPos+1][yPos])
                             scoreInt += 1
-                        if values[xPos+1][yPos+1] != 9:
+                        if values[xPos+1][yPos+1] != 9 and canvas.find_withtag(squares[xPos+1][yPos+1]):
                             canvas.delete(squares[xPos+1][yPos+1])
                             scoreInt += 1
                     elif xPos == grid-1 and yPos == grid-1:
-                        if values[xPos][yPos-1] != 9:
+                        if values[xPos][yPos-1] != 9 and canvas.find_withtag(squares[xPos][yPos-1]):
                             canvas.delete(squares[xPos][yPos-1])
                             scoreInt += 1
-                        if values[xPos-1][yPos] != 9:
+                        if values[xPos-1][yPos] != 9 and canvas.find_withtag(squares[xPos-1][yPos]):
                             canvas.delete(squares[xPos-1][yPos])
                             scoreInt += 1
-                        if values[xPos-1][yPos-1] != 9:
+                        if values[xPos-1][yPos-1] != 9 and canvas.find_withtag(squares[xPos-1][yPos-1]):
                             canvas.delete(squares[xPos-1][yPos-1])
                             scoreInt += 1
                     elif xPos == 0 and yPos == grid-1:
-                        if values[xPos][yPos-1] != 9:
+                        if values[xPos][yPos-1] != 9 and canvas.find_withtag(squares[xPos][yPos-1]):
                             canvas.delete(squares[xPos][yPos-1])
                             scoreInt += 1
-                        if values[xPos+1][yPos] != 9:
+                        if values[xPos+1][yPos] != 9 and canvas.find_withtag(squares[xPos+1][yPos]):
                             canvas.delete(squares[xPos+1][yPos])
                             scoreInt += 1
-                        if values[xPos+1][yPos-1] != 9:
+                        if values[xPos+1][yPos-1] != 9 and canvas.find_withtag(squares[xPos+1][yPos-1]):
                             canvas.delete(squares[xPos+1][yPos-1])
                             scoreInt += 1
                     elif xPos == grid-1 and yPos == 0:
-                        if values[xPos][yPos+1] != 9:
+                        if values[xPos][yPos+1] != 9 and canvas.find_withtag(squares[xPos][yPos+1]):
                             canvas.delete(squares[xPos][yPos+1])
                             scoreInt += 1
-                        if values[xPos-1][yPos] != 9:
+                        if values[xPos-1][yPos] != 9 and canvas.find_withtag(squares[xPos-1][yPos]):
                             canvas.delete(squares[xPos-1][yPos])
                             scoreInt += 1
-                        if values[xPos-1][yPos+1] != 9:
+                        if values[xPos-1][yPos+1] != 9 and canvas.find_withtag(squares[xPos-1][yPos+1]):
                             canvas.delete(squares[xPos-1][yPos+1])
                             scoreInt += 1
         #Check if the high score is less than the current score, if so the high score label
@@ -413,14 +421,31 @@ def upload_images():
     for x in numBtns:
         yp = 0
         for y in x:
-            y.place(x=((winWidth/2)-40)+(20*yp),y=25+(xp*30))
+            y.place(x=((winWidth/2)-40)+(20*yp),y=75+(xp*30))
             yp += 1
         xp += 1
     xp = 0
     for x in txtBtns:
-        x.place(x=((winWidth/2)-60)+(85*xp),y=85)
+        x.place(x=((winWidth/2)-60)+(85*xp),y=135)
         xp += 1
-
+    pos = 0
+    for x in labels:
+        if x != None:
+            xPos = winWidth/2 - 300
+            yPos = winHeight/3
+            if pos > 0 and pos < 9:
+                if pos > 4:
+                    xPos += 100 * (pos-4)
+                    yPos += 105
+                else:
+                    xPos += 100 * pos
+            else:
+                yPos += 210
+                xPos = winWidth/2 - 100
+                if pos == 9:
+                    xPos += 100
+            labels[pos].place(x=xPos, y=yPos)
+        pos += 1
 
 #Function is called to return to the main menu from the uploag images page
 def upload_back():
@@ -431,10 +456,52 @@ def upload_back():
             y.place_forget()
     for x in txtBtns:
         x.place_forget()
+    for x in labels:
+        if x != None:
+            x.place_forget()
     create_menu()
 
 #Function is called when a image button is clicked
 def open_image(pos):
-    print('Open Images')
+    global imgs
+    uploadError.pack_forget()
+    #Get file and define the allowed file types
+    filePath = filedialog.askopenfilename(filetypes=[("Image files", "*.png *.jpg *.jpeg *.gif *.bmp *.ppm *.pgm")])
+    if filePath:
+        with open(filePath, "rb") as image_file:
+            #Create a variable with the image
+            im = Image.open(filePath)
+            #Check the size of the image is 100x100
+            width, height = im.size
+            if width != 100 and height != 100:
+                #Output error message
+                uploadError.pack(side="top")
+            else:
+                #Define the x and y position dependant on the position provided
+                xPos = winWidth/2 - 300
+                yPos = winHeight/3
+                if pos > 0 and pos < 9:
+                    if pos > 4:
+                        xPos += 100 * (pos-4)
+                        yPos += 105
+                    else:
+                        xPos += 100 * pos
+                else:
+                    yPos += 210
+                    xPos = winWidth/2 - 100
+                    if pos == 9:
+                        xPos += 100
+                #Create image variable within an array
+                im = im.resize((int(secwidth)-1, int(secheight)-1))
+                imgs[pos] = ImageTk.PhotoImage(im)
+                if labels[pos] != None:
+                    labels[pos].place_forget()
+                #Add image to label and pack to the UI
+                labels[pos] = Label(root, image=imgs[pos])
+                labels[pos].place(x=xPos, y=yPos)
+
+#Function is called to check if a image exists for a specific position in an array
+def has_image(pos):
+    return imgs[pos] is not None
 
 root.mainloop()
