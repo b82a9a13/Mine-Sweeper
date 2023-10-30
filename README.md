@@ -1,2 +1,5 @@
 # Mine-Sweeper
-This is a mine sweeper game in Python which will allow the user to upload their own images. (in Development)
+This is a mine sweeper game in Python which allows a user to upload their own images for use within the game.
+
+# Instructions
+- Image size needs to be 100x100
